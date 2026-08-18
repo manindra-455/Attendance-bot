@@ -1,0 +1,154 @@
+# Terms of Service
+
+**Discord Voice Attendance Bot** ("the Bot") is a Discord automation tool that tracks voice channel join and leave events and stores attendance data in Firebase Firestore.
+
+By adding the Bot to your Discord server, you agree to these Terms of Service.
+
+---
+
+## Acceptance of Terms
+
+By inviting or using the Bot, you agree to be bound by these Terms of Service. If you do not agree to these terms, do not add or use the Bot.
+
+---
+
+## Description of Service
+
+The Bot provides the following features:
+
+- Tracks when users join and leave Discord voice and stage channels.
+- Records session data including join time, leave time, channel, and duration.
+- Stores attendance records in Firebase Firestore.
+- Provides Discord slash commands for administrators to view and manage attendance.
+- Provides a health API endpoint for uptime monitoring.
+- Intentionally **does not** record voice channel switches as attendance.
+
+---
+
+## Acceptable Use
+
+You agree to use the Bot only for lawful purposes and in accordance with these Terms.
+
+### You MAY:
+- Use the Bot to track voice attendance on servers you administer or are a member of.
+- Use attendance data for legitimate record-keeping purposes.
+- Configure the Bot's slash commands and settings as allowed by the bot operator.
+
+### You MAY NOT:
+- Use the Bot to collect data for purposes that violate Discord's [Terms of Service](https://discord.com/terms) or [Community Guidelines](https://discord.com/guidelines).
+- Use the Bot to harass, stalk, or discriminate against users based on their attendance data.
+- Attempt to access, modify, or delete data belonging to other users without authorization.
+- Use the Bot to circumvent disciplinary measures (e.g., using attendance data to retaliate against server staff).
+- Reverse engineer, decompile, or disassemble any part of the Bot.
+- Use the Bot in any manner that could damage, disable, or impair the service.
+
+---
+
+## Server Administrator Responsibilities
+
+By adding the Bot to a Discord server, you (the server administrator) accept responsibility for:
+
+- Ensuring your server complies with all applicable laws and Discord's Terms of Service.
+- Informing server members about the data collected and how it is used (see Privacy Policy).
+- Configuring bot permissions appropriately so that only authorized roles can access admin commands.
+- Ensuring users on your server are of appropriate age (minimum 13 years per Discord's Terms of Service).
+- Handling data subject requests (e.g., requests for deletion) in a timely manner.
+
+---
+
+## Data Storage
+
+- Attendance data is stored in Firebase Firestore, a cloud database service operated by Google.
+- The bot operator is responsible for the security and management of the Firestore database.
+- The Bot operator is responsible for ensuring Firebase is configured securely.
+- The bot operator is responsible for complying with applicable data protection laws.
+
+---
+
+## Bot Availability
+
+- The Bot is provided "as is" without any guarantees of uptime or availability.
+- The Bot operator reserves the right to modify, suspend, or discontinue the Bot at any time without notice.
+- The Bot operator is not liable for any loss of attendance data due to service interruptions, bot restarts, or database issues.
+
+---
+
+## Health API
+
+The Bot provides an HTTP health endpoint (`/health`) for uptime monitoring purposes. You may use this endpoint for legitimate monitoring of the Bot's availability. You may **not**:
+
+- Overload or abuse the health endpoint.
+- Use it for any purpose other than legitimate uptime monitoring.
+
+---
+
+## Disclaimers
+
+**THE BOT IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.**
+
+The bot operator does not warrant that:
+- The Bot will be uninterrupted, secure, or error-free.
+- Attendance data will always be accurate or complete.
+- Any errors in the Bot's code will be corrected.
+
+---
+
+## Limitation of Liability
+
+To the fullest extent permitted by applicable law, the bot operator shall **not** be liable for:
+
+- Any indirect, incidental, special, consequential, or punitive damages arising from or related to the use of the Bot.
+- Loss of data, profits, goodwill, or other intangible losses.
+- Any conduct of third parties, including Discord or Firebase.
+- Any action taken by server administrators based on attendance data.
+
+In no event shall the bot operator's total liability exceed **$0 USD** or the amount you paid for any service related to the Bot (if any).
+
+---
+
+## Indemnification
+
+You agree to indemnify, defend, and hold harmless the bot operator from and against any and all claims, liabilities, damages, losses, costs, and expenses (including reasonable legal fees) arising from or related to:
+
+- Your use of the Bot.
+- Your violation of these Terms of Service.
+- Your violation of any applicable law or Discord's Terms of Service.
+- Any claim that your use of the Bot caused harm to a third party.
+
+---
+
+## Termination
+
+- The bot operator may terminate or suspend the Bot or your access to it at any time, with or without cause, without prior notice.
+- You may stop using the Bot at any time by removing it from your Discord server.
+- Upon termination, the bot operator may delete your attendance data in accordance with the Privacy Policy, unless otherwise required by law.
+
+---
+
+## Changes to These Terms
+
+The bot operator reserves the right to update these Terms of Service at any time. Material changes will be communicated by updating the `TERMS_OF_SERVICE.md` file in the Bot's repository or through other reasonable means.
+
+Continued use of the Bot after changes to these Terms constitutes your acceptance of the revised terms.
+
+---
+
+## Governing Law
+
+These Terms of Service shall be governed by and construed in accordance with applicable laws. Any disputes arising from these Terms shall be resolved under the applicable legal framework.
+
+---
+
+## Severability
+
+If any provision of these Terms is found to be unenforceable or invalid, that provision shall be limited or eliminated to the minimum extent necessary, and the remaining provisions shall remain in full force and effect.
+
+---
+
+## Contact
+
+For questions about these Terms of Service, contact the **bot operator** (the person or organization running this Bot instance).
+
+---
+
+*Last updated: 2026-08-19*

@@ -1,0 +1,92 @@
+# Privacy Policy
+
+**Discord Voice Attendance Bot** ("the Bot") is a Discord automation tool that tracks voice channel join and leave events and stores attendance data in Firebase Firestore.
+
+By adding the Bot to your Discord server, you agree to this Privacy Policy.
+
+---
+
+## Data We Collect
+
+The Bot collects and stores the following data per user:
+
+| Field | Description |
+|---|---|
+| Discord User ID | Your Discord account identifier |
+| Discord Username | Your Discord username |
+| Discord Tag | Your Discord discriminator (e.g. `user#1234`) |
+| Global Name | Your Discord global display name |
+| Display Name | Your server-specific display name |
+| Nickname | Your server-specific nickname |
+| Guild ID | The Discord server ID where the session occurred |
+| Guild Name | The Discord server name where the session occurred |
+| Channel ID | The voice channel ID you joined |
+| Channel Name | The voice channel name you joined |
+| Join Time | Timestamp when you joined the voice channel |
+| Leave Time | Timestamp when you left the voice channel |
+| Duration | Calculated session length in seconds |
+
+---
+
+## How We Use Your Data
+
+- **Attendance tracking**: The Bot records when you join and leave voice channels for attendance purposes set by your server administrators.
+- **Session storage**: Completed sessions are stored in Firebase Firestore under a collection named `attendance`, keyed by your Discord User ID.
+- **Active session management**: Active (in-progress) sessions are temporarily stored in a collection named `active_voice_sessions`.
+
+---
+
+## Who Has Access
+
+- **Server Administrators**: Administrators of Discord servers using the Bot can view attendance data for their server's members through bot commands.
+- **Bot Operator**: The person running the Bot has access to the underlying Firebase Firestore database.
+- **Firebase**: Google Firebase (the backend service) processes and stores data as per their [Privacy Policy](https://policies.google.com/privacy) and [Terms of Service](https://firebase.google.com/terms).
+
+The Bot does **not** share your data with third parties beyond Firebase.
+
+---
+
+## Data Retention
+
+- Attendance records are stored indefinitely until manually deleted.
+- Active session records are deleted when you leave a voice channel or when an admin force-closes the session.
+- To request deletion of your data, contact the **bot operator** (the person running the bot instance).
+
+---
+
+## What We Do NOT Collect
+
+- The Bot does **not** record audio or voice conversations.
+- The Bot does **not** read or store messages.
+- The Bot does **not** track channel switches — only full join and leave events.
+- The Bot does **not** collect data from users who have not joined any voice channel.
+
+---
+
+## Cookies
+
+The Bot does not use cookies.
+
+---
+
+## Children's Privacy
+
+The Bot is not directed to users under the age of 13 and does not knowingly collect data from minors. Server administrators are responsible for ensuring compliance with Discord's Terms of Service, which require users to be at least 13 years old.
+
+---
+
+## Changes to This Policy
+
+This Privacy Policy may be updated from time to time. The bot operator is responsible for notifying users of material changes. Continued use of the Bot after changes constitutes acceptance of the revised policy.
+
+---
+
+## Contact
+
+For privacy-related concerns, contact the **bot operator** (the person or organization running this Bot instance).
+
+If you are a server administrator, you are responsible for informing your server members about this policy.
+
+---
+
+*Last updated: 2026-08-19*
