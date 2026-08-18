@@ -31,7 +31,7 @@ ACTIVE_SESSIONS_COLLECTION = os.getenv(
     "ACTIVE_SESSIONS_COLLECTION", "active_voice_sessions"
 ).strip()
 TIMEZONE_NAME = os.getenv("TIMEZONE", "Asia/Kolkata").strip()
-WEB_PORT = int(os.getenv("PORT", "8080").strip())
+WEB_PORT = int(os.getenv("WEB_PORT", "6112").strip())
 
 if not DISCORD_TOKEN:
     raise RuntimeError("DISCORD_TOKEN is missing. Add it to your .env file.")
