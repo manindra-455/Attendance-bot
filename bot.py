@@ -7,8 +7,8 @@ from datetime import datetime
 from typing import Any, Optional
 from zoneinfo import ZoneInfo
 
-import aiohttp
 import discord
+from flask import Flask, jsonify
 from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -31,7 +31,6 @@ ACTIVE_SESSIONS_COLLECTION = os.getenv(
     "ACTIVE_SESSIONS_COLLECTION", "active_voice_sessions"
 ).strip()
 TIMEZONE_NAME = os.getenv("TIMEZONE", "Asia/Kolkata").strip()
-WEB_PORT = int(os.getenv("WEB_PORT", "6112").strip())
 
 if not DISCORD_TOKEN:
     raise RuntimeError("DISCORD_TOKEN is missing. Add it to your .env file.")
@@ -303,53 +302,19 @@ class VoiceAttendanceBot(commands.Bot):
 
 bot = VoiceAttendanceBot(command_prefix="!", intents=intents)
 
-# Health / web server for uptime monitors
-_health_server_task: Optional[asyncio.Task] = None
+# Flask health API
+app = Flask(__name__)
 
 
-async def _health_server() -> None:
-    """Simple health API server on WEB_PORT.
-
-    Endpoints:
-      GET /health         → 200 OK, {"status": "ok", "bot": "ready" | "not_ready"}
-      GET /               → 200 OK, {"status": "ok"}
-    """
-    async def handler(request: aiohttp.web.Request) -> aiohttp.web.Response:
-        path = request.path
-        if path == "/health":
-            bot_ready = bot.is_ready() if bot.user else False
-            return aiohttp.web.json_response(
-                {"status": "ok", "bot": "ready" if bot_ready else "not_ready"},
-                status=200,
-            )
-        return aiohttp.web.json_response({"status": "ok"}, status=200)
-
-    app = aiohttp.web.Application()
-    app.router.add_get("/health", handler)
-    app.router.add_get("/", handler)
-
-    runner = aiohttp.web.AppRunner(app)
-    await runner.setup()
-    site = aiohttp.web.TCPSite(runner, "0.0.0.0", WEB_PORT)
-    await site.start()
-    logger.info("Health server listening on 0.0.0.0:%s", WEB_PORT)
-
-    # Keep server running until cancelled
-    try:
-        while True:
-            await asyncio.sleep(3600)
-    except asyncio.CancelledError:
-        pass
-    finally:
-        await runner.cleanup()
-        logger.info("Health server stopped.")
+@app.route("/health")
+def health() -> tuple:
+    bot_status = "ready" if (bot.is_ready() and bot.user) else "not_ready"
+    return {"status": "ok", "bot": bot_status}, 200
 
 
-def _start_health_server() -> None:
-    global _health_server_task
-    if _health_server_task is None or _health_server_task.done():
-        _health_server_task = asyncio.create_task(_health_server())
-        logger.info("Scheduled health server task.")
+@app.route("/")
+def index() -> tuple:
+    return {"status": "ok"}, 200
 
 
 async def record_join(member: discord.Member, channel: discord.abc.GuildChannel) -> dict[str, Any]:
@@ -377,7 +342,6 @@ async def record_leave(member: discord.Member, channel: discord.abc.GuildChannel
 @bot.event
 async def on_ready() -> None:
     logger.info("Logged in as %s (%s)", bot.user, bot.user.id if bot.user else "unknown")
-    _start_health_server()
     await bot.change_presence(
         activity=discord.Activity(type=discord.ActivityType.watching, name="voice attendance")
     )
@@ -419,14 +383,6 @@ async def on_voice_state_update(
 
     # Switches and mute/deafen/status-only voice updates are intentionally ignored.
     # Example switch: before.channel != None and after.channel != None.
-
-
-@bot.event
-async def on_disconnect() -> None:
-    global _health_server_task
-    if _health_server_task and not _health_server_task.done():
-        _health_server_task.cancel()
-        logger.info("Cancelled health server task on disconnect.")
 
 
 # -----------------------------------------------------------------------------
@@ -662,4 +618,17 @@ def format_duration(seconds: int) -> str:
 
 
 if __name__ == "__main__":
+    import threading
+
+    port = int(os.environ.get("PORT", 8000))
+
+    # Run Flask health API in a background thread
+    flask_thread = threading.Thread(
+        target=lambda: app.run(host="0.0.0.0", port=port, debug=False),
+        daemon=True,
+    )
+    flask_thread.start()
+    logger.info("Health API running on 0.0.0.0:%s", port)
+
+    # Run Discord bot in the main thread
     bot.run(DISCORD_TOKEN)
