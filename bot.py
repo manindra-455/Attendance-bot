@@ -473,8 +473,22 @@ async def attendance_today(
     all_sessions, daily_total = await asyncio.to_thread(
         _get_attendance_day_sync, str(target.id), date_key
     )
+    logger.info(
+        "ATTENDANCE_TODAY | user=%s target_id=%s guild=%s guild_id=%s date=%s all_sessions=%s",
+        interaction.user.id,
+        target.id,
+        interaction.guild.id if interaction.guild else None,
+        interaction.guild.name if interaction.guild else None,
+        date_key,
+        len(all_sessions),
+    )
     sessions = [s for s in all_sessions if str(s.get("guild_id")) == str(interaction.guild.id)]
     daily_total = sum(int(s.get("duration_seconds") or 0) for s in sessions)
+    logger.info(
+        "ATTENDANCE_TODAY | filtered sessions=%s daily_total=%s",
+        len(sessions),
+        daily_total,
+    )
 
     if not sessions:
         await interaction.response.send_message(
