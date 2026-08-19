@@ -22,19 +22,31 @@ Example document:
   "nick_name": "Server Nickname",
   "last_seen_guild_id": "111111111111111111",
   "last_seen_guild_name": "My Discord Server",
-  "total_seconds": 5400,
+  "total_seconds": 9000,
   "dates": {
-    "2026-07-25": [
-      {
-        "guild_id": "111111111111111111",
-        "guild_name": "My Discord Server",
-        "channel_id": "222222222222222222",
-        "channel_name": "General Voice",
-        "join_time": "2026-07-25T18:00:00+05:30",
-        "leave_time": "2026-07-25T19:30:00+05:30",
-        "duration_seconds": 5400
-      }
-    ]
+    "2026-07-25": {
+      "total_seconds": 5400,
+      "sessions": [
+        {
+          "guild_id": "111111111111111111",
+          "guild_name": "My Discord Server",
+          "channel_id": "222222222222222222",
+          "channel_name": "General Voice",
+          "join_time": "2026-07-25T18:00:00+05:30",
+          "leave_time": "2026-07-25T19:30:00+05:30",
+          "duration_seconds": 5400
+        },
+        {
+          "guild_id": "111111111111111111",
+          "guild_name": "My Discord Server",
+          "channel_id": "222222222222222222",
+          "channel_name": "General Voice",
+          "join_time": "2026-07-25T20:00:00+05:30",
+          "leave_time": "2026-07-25T21:00:00+05:30",
+          "duration_seconds": 3600
+        }
+      ]
+    }
   }
 }
 ```
@@ -128,6 +140,32 @@ TIMEZONE=Asia/Kolkata
 ```bash
 python bot.py
 ```
+
+## Health API (for uptime monitors / Render)
+
+The bot runs a lightweight HTTP server alongside the Discord connection.
+
+| Endpoint | Response | Use |
+|---|---|---|
+| `GET /health` | `{"status": "ok", "bot": "ready"}` | Uptime monitor health check |
+| `GET /` | `{"status": "ok"}` | Simple ping |
+
+Configure your uptime monitor to check `http://your-host:8080/health`.
+
+- `WEB_PORT` defaults to `8080`. Set it in `.env` to match your deployment port.
+- If the bot is still starting up, `/health` returns `{"status": "ok", "bot": "not_ready"}`.
+- When Discord is connected and slash commands are synced, `/health` returns `{"status": "ok", "bot": "ready"}`.
+
+### Render deployment
+
+In your Render dashboard:
+
+1. **Start Command**: `python bot.py`
+2. **Environment Variables** (add all from `.env`):
+   - `DISCORD_TOKEN`
+   - `FIREBASE_SERVICE_ACCOUNT` (upload the JSON as a file, reference it by filename)
+   - `WEB_PORT=10000` (Render assigns port via this env var; the bot reads it)
+3. **Health Check Path**: `/health`
 
 ## Important behavior notes
 

@@ -239,9 +239,8 @@ def _close_active_session_sync(
                 "last_seen_guild_name": guild_name,
                 "updated_at": firestore.SERVER_TIMESTAMP,
                 "total_seconds": firestore.Increment(duration_seconds),
-                "dates": {
-                    date_key: firestore.ArrayUnion([session]),
-                },
+                f"dates.{date_key}.total_seconds": firestore.Increment(duration_seconds),
+                f"dates.{date_key}.sessions": firestore.ArrayUnion([session]),
             },
             merge=True,
         )
@@ -268,14 +267,17 @@ def _get_active_session_sync(guild_id: str, user_id: str) -> Optional[dict[str, 
 
 
 
-def _get_attendance_day_sync(user_id: str, date_key: str) -> list[dict[str, Any]]:
+def _get_attendance_day_sync(user_id: str, date_key: str) -> tuple[list[dict[str, Any]], int]:
+    """Return (sessions, total_seconds) for a specific user and date."""
     snap = db.collection(ATTENDANCE_COLLECTION).document(user_id).get()
     if not snap.exists:
-        return []
+        return [], 0
     data = snap.to_dict() or {}
     dates = data.get("dates") or {}
-    sessions = dates.get(date_key) or []
-    return [s for s in sessions if isinstance(s, dict)]
+    date_data = dates.get(date_key) or {}
+    sessions = date_data.get("sessions", []) if isinstance(date_data, dict) else date_data
+    total_seconds = date_data.get("total_seconds", 0) if isinstance(date_data, dict) else 0
+    return [s for s in sessions if isinstance(s, dict)], int(total_seconds or 0)
 
 
 # -----------------------------------------------------------------------------
@@ -468,8 +470,11 @@ async def attendance_today(
         return
 
     date_key = get_date_key(now_local())
-    sessions = await asyncio.to_thread(_get_attendance_day_sync, str(target.id), date_key)
-    sessions = [s for s in sessions if str(s.get("guild_id")) == str(interaction.guild.id)]
+    all_sessions, daily_total = await asyncio.to_thread(
+        _get_attendance_day_sync, str(target.id), date_key
+    )
+    sessions = [s for s in all_sessions if str(s.get("guild_id")) == str(interaction.guild.id)]
+    daily_total = sum(int(s.get("duration_seconds") or 0) for s in sessions)
 
     if not sessions:
         await interaction.response.send_message(
@@ -478,10 +483,9 @@ async def attendance_today(
         )
         return
 
-    total_seconds = sum(int(s.get("duration_seconds") or 0) for s in sessions)
     lines = [
         f"📅 Completed sessions for {target.mention} on `{date_key}`",
-        f"Total completed time: `{format_duration(total_seconds)}`",
+        f"Total time: `{format_duration(daily_total)}`",
         "",
     ]
 
