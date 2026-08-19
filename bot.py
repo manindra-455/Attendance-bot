@@ -270,14 +270,38 @@ def _get_active_session_sync(guild_id: str, user_id: str) -> Optional[dict[str, 
 def _get_attendance_day_sync(user_id: str, date_key: str) -> tuple[list[dict[str, Any]], int]:
     """Return (sessions, total_seconds) for a specific user and date."""
     snap = db.collection(ATTENDANCE_COLLECTION).document(user_id).get()
+    logger.info(
+        "GET_ATTENDANCE_DAY | user_id=%s date_key=%s exists=%s",
+        user_id,
+        date_key,
+        snap.exists,
+    )
     if not snap.exists:
         return [], 0
     data = snap.to_dict() or {}
     dates = data.get("dates") or {}
-    date_data = dates.get(date_key) or {}
-    sessions = date_data.get("sessions", []) if isinstance(date_data, dict) else date_data
-    total_seconds = date_data.get("total_seconds", 0) if isinstance(date_data, dict) else 0
-    return [s for s in sessions if isinstance(s, dict)], int(total_seconds or 0)
+    date_data = dates.get(date_key)
+    logger.info(
+        "GET_ATTENDANCE_DAY | dates_keys=%s date_data=%s",
+        list(dates.keys()),
+        date_data,
+    )
+    if date_data is None:
+        return [], 0
+    # Handle both old format (direct array) and new format (dict with sessions + total_seconds)
+    if isinstance(date_data, list):
+        sessions = [s for s in date_data if isinstance(s, dict)]
+        total_seconds = sum(int(s.get("duration_seconds") or 0) for s in sessions)
+        return sessions, total_seconds
+    elif isinstance(date_data, dict):
+        sessions = date_data.get("sessions", [])
+        if isinstance(sessions, list):
+            sessions = [s for s in sessions if isinstance(s, dict)]
+        else:
+            sessions = []
+        total_seconds = int(date_data.get("total_seconds") or 0)
+        return sessions, total_seconds
+    return [], 0
 
 
 # -----------------------------------------------------------------------------
